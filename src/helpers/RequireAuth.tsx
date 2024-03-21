@@ -4,7 +4,7 @@ import {useSelector} from 'react-redux';
 import {RootState} from '../store/store.ts';
 
 export default function RequireAuth({children}: { children: ReactNode }) {
-
+// useSelector делает выборку из состояния
 	const jws = useSelector((s: RootState) => s.user.jwt);
 
 	if (!jws) {
