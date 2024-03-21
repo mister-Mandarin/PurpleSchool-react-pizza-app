@@ -1,9 +1,16 @@
-import {NavLink, Outlet} from 'react-router-dom';
+import {NavLink, Outlet, useNavigate} from 'react-router-dom';
 import styles from './Layout.module.css';
 import Button from '../../components/Button/Button.tsx';
 import cn from 'classnames';
 
 export default function Layout() {
+
+	const navigate = useNavigate();
+
+	function logout() {
+		localStorage.removeItem('jwt-token');
+		navigate('/auth/login');
+	}
 
 	return (
 		<div className={styles.layout}>
@@ -18,7 +25,7 @@ export default function Layout() {
 						[styles.active]: isActive
 					})}>
 						<img src="/menu-icon.svg" alt="Иконка меню"/>
-						Меню
+                        Меню
 					</NavLink>
 					<NavLink to="/cart" className={({isActive}) => cn(styles.link, {
 						[styles.active]: isActive
@@ -28,9 +35,9 @@ export default function Layout() {
 					</NavLink>
 
 				</div>
-				<Button className={styles.exitButton}>
+				<Button className={styles.exitButton} onClick={logout}>
 					<img src="/exit-icon.svg" alt="Иконка выхода"/>
-					Выход
+                    Выход
 				</Button>
 			</div>
 			<div className={styles.content}>
