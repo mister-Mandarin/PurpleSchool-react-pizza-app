@@ -3,10 +3,12 @@
 import {configureStore} from '@reduxjs/toolkit';
 import userSlice from './User.slice.ts';
 import {saveState} from './storage.ts';
+import cartSlice from './Cart.slice.ts';
 
 const store = configureStore({
 	reducer: {
-		user: userSlice
+		user: userSlice,
+		cart: cartSlice
 	}
 });
 

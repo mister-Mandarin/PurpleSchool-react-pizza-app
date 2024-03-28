@@ -4,7 +4,6 @@ import './index.css';
 import {createBrowserRouter, defer, RouterProvider} from 'react-router-dom';
 import Cart from './pages/Cart/Cart.tsx';
 import Error from './pages/Error/Error.tsx';
-import Layout from './Layout/Menu/Layout.tsx';
 import Product from './pages/Product/Product.tsx';
 import axios from 'axios';
 import {PREFIX} from './helpers/API.ts';
@@ -13,20 +12,20 @@ import Login from './pages/Login/Login.tsx';
 import Register from './pages/Register/Register.tsx';
 import RequireAuth from './helpers/RequireAuth.tsx';
 import {Provider} from 'react-redux';
+import Menu from './pages/Menu/Menu.tsx';
 import store from './store/store.ts';
 
 // разбиваем бандл на несколкьо файлов.
 // Тем самым выносим меню в отдельный js файл. Нужный компонент оборачиваем в suspens
-const Menu = lazy(() =>
-	import('./pages/Menu/Menu.tsx')
+const MenuLayout = lazy(() =>
+	import('./Layout/Menu/MenuLayout.tsx')
 );
 
 const router = createBrowserRouter([
 	{
 		path: '/',
 		// обернули все страницы в компоннео "авторизации". Если нет токена - то он дальше не пропустит
-		element:
-            <RequireAuth><Layout/></RequireAuth>,
+		element: <RequireAuth><MenuLayout/></RequireAuth>,
 		children: [
 			{
 				path: '/',

@@ -1,28 +1,68 @@
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import loadState from './storage.ts';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {LoginResponse} from '../interfaces/auth.interface.ts';
 import {PREFIX} from '../helpers/API.ts';
+import {Profile} from '../interfaces/user.interface.ts';
+import {RootState} from './store.ts';
 
 export interface userSliceProps {
     jwt: string | null;
-	loginState: null | 'rejected';
+    loginErrorMessage?: string;
+    registerErrorMessage?: string;
+    profile?: Profile;
 }
 
 const initialState: userSliceProps = {
 	// при загрузке загружаем функцией значение по ключу из локалстореджа
-	jwt: loadState('jwt-token') ?? null,
-	loginState: null
+	jwt: loadState('jwt-token') ?? null
 };
 
 export const login = createAsyncThunk(
 	'user/login', // это название
-	async (params: {email: string, password: string}) => {
-		const {data} = await axios.post<LoginResponse>(`${PREFIX}/auth/login`, {
-			email: params.email,
-			password: params.password
+	async (params: { email: string, password: string }) => {
+		try {
+			const {data} = await axios.post<LoginResponse>(`${PREFIX}/auth/login`, {
+				email: params.email,
+				password: params.password
+			});
+			return data;
+		} catch (err) {
+			if (err instanceof AxiosError) {
+				throw new Error(err.response?.data.message);
+			}
+		}
+	}
+);
+
+export const getProfile = createAsyncThunk<Profile, void, { state: RootState }>(
+	'user/profile', // это название
+	async (_, thunkAPI) => {
+		const jwt = thunkAPI.getState().user.jwt;
+		const {data} = await axios.get<LoginResponse>(`${PREFIX}/user/profile`, {
+			headers: {
+				Authorization: `Bearer ${jwt}`
+			}
 		});
 		return data;
+	}
+);
+
+export const register = createAsyncThunk(
+	'user/register', // это название
+	async (params: { email: string, password: string, name: string }) => {
+		try {
+			const {data} = await axios.post<LoginResponse>(`${PREFIX}/auth/register`, {
+				email: params.email,
+				password: params.password,
+				name: params.name
+			});
+			return data;
+		} catch (err) {
+			if (err instanceof AxiosError) {
+				throw new Error(err.response?.data.message);
+			}
+		}
 	}
 );
 
@@ -37,6 +77,12 @@ export const userSlice = createSlice({
 		// },
 		logout: (state) => {
 			state.jwt = null;
+		},
+		clearLoginError: (state) => {
+			state.loginErrorMessage = undefined;
+		},
+		clearRegisterError: (state) => {
+			state.registerErrorMessage = undefined;
 		}
 	},
 	// свойство через которое можно устанавливать реакцию (редьюсеры) на внешние действия
@@ -44,14 +90,28 @@ export const userSlice = createSlice({
 	// Короче после выполенния А нужно выполнить действие Б
 	extraReducers: builder => {
 		//fulfilled - в результате выполнения функции успешно все отработало
-		builder.addCase(login.fulfilled,
-			(state, action: PayloadAction<LoginResponse>) => {
-				state.jwt = action.payload.access_token;
-			});
-		builder.addCase(login.rejected,
-			(state, action) => {
-				console.log(action);
-			});
+		builder.addCase(login.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+			state.jwt = action.payload.access_token;
+		});
+		builder.addCase(login.rejected, (state, action) => {
+			state.loginErrorMessage = action.error.message;
+		});
+		builder.addCase(getProfile.fulfilled, (state, action) => {
+			state.profile = action.payload;
+		});
+		builder.addCase(register.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+			state.jwt = action.payload.access_token;
+		});
+		builder.addCase(register.rejected, (state, action) => {
+			state.registerErrorMessage = action.error.message;
+		});
+
 
 	}
 });
