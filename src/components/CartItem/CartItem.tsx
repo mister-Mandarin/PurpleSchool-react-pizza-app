@@ -1,11 +1,11 @@
 import styles from './CartItem.module.css';
 import {useDispatch} from 'react-redux';
-import {AppDispath} from '../../store/store';
+import {AppDispatch} from '../../store/store.ts';
 import {cartActions} from '../../store/Cart.slice.ts';
 import {CartItemProps} from './CartItem.props';
 
 export default function CartItem(props: CartItemProps) {
-	const dispatch = useDispatch<AppDispath>();
+	const dispatch = useDispatch<AppDispatch>();
 
 	const increase = () => {
 		dispatch(cartActions.add(props.id));

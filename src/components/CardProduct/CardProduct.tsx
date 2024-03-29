@@ -4,14 +4,15 @@ import {CardProductProps} from './CardProduct.props.ts';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from '../../store/store.ts';
 import {cartActions} from '../../store/Cart.slice.ts';
+import {MouseEvent} from 'react';
 
 function CardProduct(props: CardProductProps) {
 
 	const dispatch = useDispatch<AppDispatch>();
 
-
-	function addCart(e: MouseEvent) {
-		e.preventDefault();
+	function addCart(event: MouseEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		event.stopPropagation();
 		dispatch(cartActions.add(props.id));
 	}
 

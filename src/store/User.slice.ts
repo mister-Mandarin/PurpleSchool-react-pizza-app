@@ -4,7 +4,6 @@ import axios, {AxiosError} from 'axios';
 import {LoginResponse} from '../interfaces/auth.interface.ts';
 import {PREFIX} from '../helpers/API.ts';
 import {Profile} from '../interfaces/user.interface.ts';
-import {RootState} from './store.ts';
 
 export interface userSliceProps {
     jwt: string | null;
@@ -35,10 +34,10 @@ export const login = createAsyncThunk(
 	}
 );
 
-export const getProfile = createAsyncThunk<Profile, void, { state: RootState }>(
+export const getProfile = createAsyncThunk(
 	'user/profile', // это название
-	async (_, thunkAPI) => {
-		const jwt = thunkAPI.getState().user.jwt;
+	async (thunkAPI) => {
+		const jwt: string = thunkAPI.getState().user.jwt;
 		const {data} = await axios.get<LoginResponse>(`${PREFIX}/user/profile`, {
 			headers: {
 				Authorization: `Bearer ${jwt}`

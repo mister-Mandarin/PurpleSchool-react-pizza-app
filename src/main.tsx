@@ -14,9 +14,10 @@ import RequireAuth from './helpers/RequireAuth.tsx';
 import {Provider} from 'react-redux';
 import Menu from './pages/Menu/Menu.tsx';
 import store from './store/store.ts';
+import {Success} from './pages/Success/Success.tsx';
 
 // разбиваем бандл на несколкьо файлов.
-// Тем самым выносим меню в отдельный js файл. Нужный компонент оборачиваем в suspens
+// Тем самым выносим меню в отдельный js файл. Нужный компонент оборачиваем в Suspense
 const MenuLayout = lazy(() =>
 	import('./Layout/Menu/MenuLayout.tsx')
 );
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
 			{
 				path: '/cart',
 				element: <Cart/>
+			},
+			{
+				path: '/success',
+				element: <Success/>
 			},
 			{
 				// после двоеточия может быть любое название

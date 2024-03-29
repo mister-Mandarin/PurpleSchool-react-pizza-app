@@ -15,6 +15,7 @@ const store = configureStore({
 // в случае изменения состояния переписываем состояние
 store.subscribe(() => {
 	saveState(store.getState().user.jwt, 'jwt-token');
+	saveState(store.getState().cart.items, 'cart');
 });
 
 export type RootState = ReturnType<typeof store.getState>;
